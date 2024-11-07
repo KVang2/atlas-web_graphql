@@ -1,6 +1,7 @@
 const { GraphQLObjectType,
     GraphQLString,
-    GraphQLInt
+    GraphQLInt,
+    GraphQLID
 } = require('graphql');
 
 // 2 dummy data array
@@ -23,7 +24,7 @@ const tasks = [
 const TaskType = new GraphQLObjectType({
     name: 'Task',
     fields: {
-        id: { type: GraphQLString },
+        id: { type: GraphQLID },
     weight: { type: GraphQLInt },
     description: { type: GraphQLString },
     },
@@ -35,13 +36,24 @@ const RootQuery = new GraphQLObjectType({
     fields: {
     task: {
             type: TaskType,
-            args: { id: { type: GraphQLString } },
+            args: { id: { type: GraphQLID } },
             resolve(parent, args) {
                 return _.find(tasks, { id: args.id });
             }
         }
     }
 });
+
+// ProjectType
+const ProjectType = new GraphQLObjectType({
+    name: 'Project',
+    fields: {
+        id: { type: GraphQLID },
+        title: { type: GraphQLString },
+        weight: { type: GraphQLInt },
+        description: { type: GraphQLString },
+    },
+})
 
 module.exports = new GraphQLSchema({
     query: RootQuery
