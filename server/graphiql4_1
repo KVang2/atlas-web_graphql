@@ -1,5 +1,3 @@
-import { getDescription } from "graphql"
-
 {
     task(id: "2") {
         title
