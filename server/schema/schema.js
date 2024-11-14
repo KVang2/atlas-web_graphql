@@ -2,10 +2,14 @@ const { GraphQLObjectType,
     GraphQLString,
     GraphQLInt,
     GraphQLID,
-    GraphQLList
+    GraphQLList,
+    GraphQLNonNull
 } = require('graphql');
 
 const _ = require('lodash');
+const Project = require('../models/project');
+const Task = require('../models/task');
+
 
 // 2 dummy data array
 const tasks = [
@@ -58,6 +62,23 @@ const TaskType = new GraphQLObjectType({
     })
 });
 
+// ProjectType
+const ProjectType = new GraphQLObjectType({
+    name: 'Project',
+    fields: () => ({
+        id: { type: GraphQLID },
+        title: { type: GraphQLString },
+        weight: { type: GraphQLInt },
+        description: { type: GraphQLString },
+        tasks: {
+            type: new GraphQLList(TaskType),
+            resolve(parent, args) {
+                return _.filter(tasks, { projectId: parent.id });
+            }
+        }
+    })
+});
+
 // RootQuery
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
@@ -91,23 +112,30 @@ const RootQuery = new GraphQLObjectType({
     }
 });
 
-// ProjectType
-const ProjectType = new GraphQLObjectType({
-    name: 'Project',
-    fields: () => ({
-        id: { type: GraphQLID },
-        title: { type: GraphQLString },
-        weight: { type: GraphQLInt },
-        description: { type: GraphQLString },
-        tasks: {
-            type: new GraphQLList(TaskType),
+// Addproject mutation
+const Mutation = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+        addProject: {
+            type: ProjectType,
+            args: {
+                title: { type: new GraphQLNonNull(GraphQLString) },
+                weight: { type: new GraphQLNonNull(GraphQLInt) },
+                description: { type: new GraphQLNonNull(GraphQLString) },
+            },
             resolve(parent, args) {
-                return _.filter(tasks, { projectId: parent.id });
+                const project = new Project({
+                    title: args.title,
+                    weight: args.weight,
+                    description: args.description,
+                });
+                return project.save();
             }
         }
-    })
-});
+    }
+})
 
 module.exports = new GraphQLSchema({
-    query: RootQuery
+    query: RootQuery,
+    mutation: Mutation,
 });
