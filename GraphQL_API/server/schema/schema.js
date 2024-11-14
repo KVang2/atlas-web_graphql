@@ -3,7 +3,8 @@ const { GraphQLObjectType,
     GraphQLInt,
     GraphQLID,
     GraphQLList,
-    GraphQLNonNull
+    GraphQLNonNull,
+    GraphQLSchema
 } = require('graphql');
 
 const _ = require('lodash');

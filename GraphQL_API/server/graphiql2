@@ -1,7 +1,7 @@
 {
    task(id: "2") {
-    title
-    weight
-    description
+      title
+      weight
+      description
    }
 }
